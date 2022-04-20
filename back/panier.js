@@ -49,16 +49,12 @@ const cartSynthesis = async () => {
     newElement('input', {'type' : "number", 'class' : 'itemQuantity', 'min' : '1', 'max' : '100', 'value' : element.quantity}, null, itemContent_parameter)
 
     let itemContent_delete = newElement('div', {"class" : "cart__item__content__settings__delete"}, null, itemContent);
-    newElement('p', {'class' : 'deleteItem', 'onclick' : '_removeItem(' + JSON.stringify(item._id) +')'}, 'Supprimer', itemContent_delete);
+    newElement('p', {'class' : 'deleteItem', 'onclick' : 'selectItem()'}, 'Supprimer', itemContent_delete);
   }
   total();
 }
 
-const _removeItem = (id) =>{
-  let cart =  JSON.parse(localStorage.getItem("panier")); 
-  let element = cart.find(element => element._id == id);
-  localStorage.removeItem(cart.indexOf(element));
-}
+
 
 
 //  CALCUL DU TOTAL
@@ -87,16 +83,11 @@ const total = async () => {
 //  FORMULAIRE //
 const postForm = () => {
   let contact = new Object;
-  let allData = new Array;
   for (element of document.getElementsByTagName("input")){
-    let data = [];
     if (element.type != "submit" && element.type != "number"){
       manageForm(element);    //controle le format des donnees du formulaire
-      data.push(element.name);
-      data.push(element.value);
-      allData.push(data);
+      contact[element.name] = element.value;
     }
-    contact = allData;
   }
   let produits = getAllId();  //recupere les id des produits
 
@@ -110,8 +101,9 @@ const postForm = () => {
       produits,
       contact
     },
-    mode: "cors"
-  })
+    mode: "cors",
+    //body: form
+  });
 }
 
 
@@ -162,14 +154,19 @@ function saveCart(cart){
 }
 
 
+const selectItem = () =>{
+  let panier = document.getElementsByTagName("article");
+  for (element of panier){
+    panier.addEventListener("click", console.log(element));
+  }
 
-/*
-var form = new FormData(document.getElementsByTagName('form')[0]);
-fetch("/order", {
-  method: "POST",
-  body: form
-})
-*/
+
+  //let cart =  JSON.parse(localStorage.getItem("panier")); 
+  //let element = cart.find(element => element._id == id);
+  //localStorage.removeItem(cart.indexOf(element));
+}
+
+
 
 
 
