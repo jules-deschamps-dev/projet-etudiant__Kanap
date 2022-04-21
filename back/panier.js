@@ -91,18 +91,28 @@ const postForm = () => {
   }
   let produits = getAllId();  //recupere les id des produits
 
-  console.log(typeof produits, "produits", produits);
-  console.log(typeof contact, "contact", contact);
+  console.log("produits", produits);
+  console.log("contact", contact);
+
+  produits = JSON.stringify(produits);
+  contact = JSON.stringify(contact)
+
+  data = {
+    "contact" : contact,
+    "products" : produits,
+  }
+  data = JSON.stringify(data);
+
 
   fetch(
     "http://localhost:3000/api/products/order", {
     method: "POST",
+    body : 
+      data
+    ,
     headers : {
-      produits,
-      contact
-    },
-    mode: "cors",
-    //body: form
+      "content-type" : "application/json"
+    }
   });
 }
 
@@ -154,26 +164,29 @@ function saveCart(cart){
 }
 
 
+
+
 const selectItem = () =>{
-  let panier = document.getElementsByTagName("article");
-  for (element of panier){
-    panier.addEventListener("click", console.log(element));
-  }
+  let cart = JSON.parse(localStorage.panier);
+  let target = event.target.closest("article");
+  let id = target.dataset.id;
+  let color = target.dataset.color;
+  target.remove();
+  let result = cart.filter(element => element._id != id || element.color != color);
+  window.localStorage.setItem("panier", JSON.stringify(result));
+  total();
+}
 
-
-  //let cart =  JSON.parse(localStorage.getItem("panier")); 
-  //let element = cart.find(element => element._id == id);
-  //localStorage.removeItem(cart.indexOf(element));
+function removeItem(item){
+  let cart = getCart();
+  cart = cart.filter(element => element._id != findProduct._id);
 }
 
 
 
 
 
-
-
-
-
+//        console.log(element.getAttribute("data-id"));
 
 
 
