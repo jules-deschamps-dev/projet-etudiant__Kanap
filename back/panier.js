@@ -46,10 +46,10 @@ const cartSynthesis = async () => {
     
     let itemContent_parameter = newElement('div', {"class" : "cart__item__content__settings"}, null, itemContent);
     newElement('p', null, element.quantity, itemContent_parameter);
-    newElement('input', {'type' : "number", 'class' : 'itemQuantity', 'min' : '1', 'max' : '100', 'value' : element.quantity}, null, itemContent_parameter)
+    newElement('input', {'type' : "number", 'class' : 'itemQuantity', 'min' : '1', 'max' : '100', 'value' : element.quantity, 'onclick' : 'changeQuantity()'}, null, itemContent_parameter)
 
     let itemContent_delete = newElement('div', {"class" : "cart__item__content__settings__delete"}, null, itemContent);
-    newElement('p', {'class' : 'deleteItem', 'onclick' : 'selectItem()'}, 'Supprimer', itemContent_delete);
+    newElement('p', {'class' : 'deleteItem', 'onclick' : 'removeItem()'}, 'Supprimer', itemContent_delete);
   }
   total();
 }
@@ -82,38 +82,65 @@ const total = async () => {
 
 //  FORMULAIRE //
 const postForm = () => {
-  let contact = new Object;
+  //let contact = new Object;
   for (element of document.getElementsByTagName("input")){
     if (element.type != "submit" && element.type != "number"){
-      manageForm(element);    //controle le format des donnees du formulaire
-      contact[element.name] = element.value;
+      //manageForm(element);    //controle le format des donnees du formulaire
+      //contact[element.name] = element.value;
     }
   }
-  let produits = getAllId();  //recupere les id des produits
+  let contact = {
+    firstName: "Jules",
+    lastName: "Deschamps",
+    address: "178address",
+    city: "Nimes",
+    email: "bbbbbb@aaaaa.com",
+   
+  }
 
-  console.log("produits", produits);
+  //let products = getAllId();  //recupere les id des products
+  
+  let products = ["dezfzesdf"]
+
+  console.log("products", products);
   console.log("contact", contact);
 
-  produits = JSON.stringify(produits);
+  products = JSON.stringify(products);
   contact = JSON.stringify(contact)
 
-  data = {
+  let data = {
     "contact" : contact,
-    "products" : produits,
+    "products" : products,
   }
-  data = JSON.stringify(data);
+  //data = JSON.parse(data);
 
+  //console.log(data);
+  
+  let option = {
+    'method': "POST",
+    'body' : "data",
+    'Headers' : {"Content-Type" : "application/json"}
+  }
 
+  //option = JSON.stringify(option);
+
+  fetch(
+    "http://localhost:3000/api/products/order", option
+  );
+  /*
   fetch(
     "http://localhost:3000/api/products/order", {
     method: "POST",
-    body : 
-      data
-    ,
-    headers : {
-      "content-type" : "application/json"
+    data : 
+    {
+      "contact" : contact,
+      "products" : products,
     }
-  });
+    ,
+    Headers : {
+      "Content-Type" : "application/json"
+    }
+  });*/
 }
 
 
@@ -147,41 +174,49 @@ const manageForm = (element) => {
 
 
 
-function changeQuantity(item, quantity){
+const changeQuantity = () =>{
   let cart = getCart();
-  let foundProduct = cart.find(element => element._id == item._id);
-  if (foundProduct != undefined){
-    foundProduct.quantity += quantity;
-    if (foundProduct.quantity < 1){
-      removeItem(foundProduct);
-    } else {
-      saveCart(cart);
-    }
-  }
-}
-function saveCart(cart){
-  localStorage.setItem("cart", JSON.stringify(cart));
+  let data = selectItem();
+  let newQuantity = event.target.closest("div").childNodes[1].value;
+  cart.filter(element => element._id == data.id || element.color == data.color)[0].quantity = newQuantity;
+  let newQuantityPrint = event.target.closest("div").childNodes[0];
+  newQuantityPrint.textContent = newQuantity;
+  saveCart(cart);
 }
 
 
-
-
-const selectItem = () =>{
-  let cart = JSON.parse(localStorage.panier);
-  let target = event.target.closest("article");
-  let id = target.dataset.id;
-  let color = target.dataset.color;
-  target.remove();
-  let result = cart.filter(element => element._id != id || element.color != color);
-  window.localStorage.setItem("panier", JSON.stringify(result));
+const saveCart = (cart) => {
+  localStorage.setItem("panier", JSON.stringify(cart));
   total();
 }
 
-function removeItem(item){
+
+
+
+const removeItem = () =>{
   let cart = getCart();
-  cart = cart.filter(element => element._id != findProduct._id);
+  let data = selectItem();
+  data.target.remove();
+  let result = cart.filter(element => element._id != data.id || element.color != data.color);
+  saveCart(result);
 }
 
+const selectItem = () => {
+  let target = event.target.closest("article");
+  let id = target.dataset.id;
+  let color = target.dataset.color;
+  let data = {
+    "target" : target,
+    "id" : id,
+    "color" : color
+  }
+  return data;
+}
+
+const getCart = () => {
+  let cart = JSON.parse(localStorage.panier);
+  return cart;
+}
 
 
 
