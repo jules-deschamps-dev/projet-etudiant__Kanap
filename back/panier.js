@@ -100,9 +100,9 @@ const postForm = () => {
       "products" : products,
     },
     'Headers' : {"Content-Type" : "application/json"}
-  }
+  }s
   */
-
+  //
   
   //console.log(products)
   //console.log(data);
