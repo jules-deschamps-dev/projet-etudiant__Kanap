@@ -56,37 +56,13 @@ const cartSynthesis = async () => {
 
 
 
-
-//  CALCUL DU TOTAL
-const total = async () => {
-  let totalPrice = 0;
-  let totalQuantity = 0;
-  let panierLocal = JSON.parse(localStorage.getItem('panier'));
-  for (element of panierLocal){
-    const result = await fetch("http://localhost:3000/api/products/" + element._id);
-    let item =  await result.json();
-    if (item._id == element._id ){
-      totalPrice += item.price * element.quantity;
-      totalQuantity += parseInt(element.quantity);
-    }
-  }
-  
-  document.getElementById("totalPrice").textContent = totalPrice;
-  document.getElementById("totalQuantity").textContent = totalQuantity;
-}// ________________________________________________________________________
-
-
-
-
-
-
 //  FORMULAIRE //
 const postForm = () => {
   //let contact = new Object;
   for (element of document.getElementsByTagName("input")){
     if (element.type != "submit" && element.type != "number"){
-      //manageForm(element);    //controle le format des donnees du formulaire
-      //contact[element.name] = element.value;
+      //manageForm(element);    //controle le format des donnees du formulaire  //do not remove
+      //contact[element.name] = element.value;  //do not remove
     }
   }
   let contact = {
@@ -98,7 +74,8 @@ const postForm = () => {
    
   }
 
-  //let products = getAllId();  //recupere les id des products
+  console.log(typeof contact.firstName, typeof contact.lastName, typeof contact.email, typeof contact.address, typeof contact.city);
+  //let products = getAllId();  //recupere les id des products //do not remove
   
   let products = ["dezfzesdf"]
 
@@ -108,39 +85,42 @@ const postForm = () => {
   products = JSON.stringify(products);
   contact = JSON.stringify(contact)
 
+  /*
   let data = {
     "contact" : contact,
     "products" : products,
   }
-  //data = JSON.parse(data);
-
-  //console.log(data);
-  
+  console.log(typeof data);
+  */
+  /*
   let option = {
     'method': "POST",
-    'body' : "data",
-    'Headers' : {"Content-Type" : "application/json"}
-  }
-
-  //option = JSON.stringify(option);
-
-  fetch(
-    "http://localhost:3000/api/products/order", option
-  );
-  /*
-  fetch(
-    "http://localhost:3000/api/products/order", {
-    method: "POST",
-    data : 
-    {
+    'body' : {
       "contact" : contact,
       "products" : products,
+    },
+    'Headers' : {"Content-Type" : "application/json"}
+  }
+  */
+
+  
+  //console.log(products)
+  //console.log(data);
+  //option = JSON.stringify(option);
+
+
+  fetch(
+    "http://localhost:3000/api/products/order", {
+    'method': "POST",
+    'body' : {
+      "contact" : contact,
+      "products" : products
+    },
+    'Headers' : {
+      'Content-Type': "text/plain;charset=UTF-8",
+      'Host': "localhost:3000"
     }
-    ,
-    Headers : {
-      "Content-Type" : "application/json"
-    }
-  });*/
+  });
 }
 
 
@@ -174,33 +154,6 @@ const manageForm = (element) => {
 
 
 
-const changeQuantity = () =>{
-  let cart = getCart();
-  let data = selectItem();
-  let newQuantity = event.target.closest("div").childNodes[1].value;
-  cart.filter(element => element._id == data.id || element.color == data.color)[0].quantity = newQuantity;
-  let newQuantityPrint = event.target.closest("div").childNodes[0];
-  newQuantityPrint.textContent = newQuantity;
-  saveCart(cart);
-}
-
-
-const saveCart = (cart) => {
-  localStorage.setItem("panier", JSON.stringify(cart));
-  total();
-}
-
-
-
-
-const removeItem = () =>{
-  let cart = getCart();
-  let data = selectItem();
-  data.target.remove();
-  let result = cart.filter(element => element._id != data.id || element.color != data.color);
-  saveCart(result);
-}
-
 const selectItem = () => {
   let target = event.target.closest("article");
   let id = target.dataset.id;
@@ -213,69 +166,48 @@ const selectItem = () => {
   return data;
 }
 
+const changeQuantity = () =>{
+  let cart = getCart();
+  let data = selectItem();
+  let newQuantity = event.target.closest("div").childNodes[1].value;
+  cart.filter(element => element._id == data.id || element.color == data.color)[0].quantity = newQuantity;
+  let newQuantityPrint = event.target.closest("div").childNodes[0];
+  newQuantityPrint.textContent = newQuantity;
+  saveCart(cart);
+}
+
+const removeItem = () =>{
+  let cart = getCart();
+  let data = selectItem();
+  data.target.remove();
+  let result = cart.filter(element => element._id != data.id || element.color != data.color);
+  saveCart(result);
+}
+
 const getCart = () => {
   let cart = JSON.parse(localStorage.panier);
   return cart;
 }
 
-
-
-
-//        console.log(element.getAttribute("data-id"));
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-function saveCart(cart){
-  localStorage.setItem("cart", JSON.stringify(cart));
+const saveCart = (cart) => {
+  localStorage.setItem("panier", JSON.stringify(cart));
+  total();
 }
 
-function getCart(){
-  let cart = localStorage.getItem(cart);
-  if (cart == null){
-    return [];
-  } else {
-    return JSON.parse(cart);
-  }
-}
-
-function addToCart(item) {
-  let cart = getCart();
-  let foundProduct = cart.find(element => element._id == item._id);
-  if (foundProduct != undefined){
-    foundProduct.quantity++;
-  } else{
-    item.quantity = 1;
-    cart.push(item);
-  }
-  saveCart(cart);
-}
-
-function removeItem(item){
-  let cart = getCart();
-  cart = cart.filter(element => element._id != findProduct._id);
-}
-
-function changeQuantity(item, quantity){
-  let cart = getCart();
-  let foundProduct = cart.find(element => element._id == item._id);
-  if (foundProduct != undefined){
-    foundProduct.quantity += quantity;
-    if (foundProduct.quantity < 1){
-      removeItem(foundProduct);
-    } else {
-      saveCart(cart);
+//  CALCUL DU TOTAL
+const total = async () => {
+  let totalPrice = 0;
+  let totalQuantity = 0;
+  let panierLocal = JSON.parse(localStorage.getItem('panier'));
+  for (element of panierLocal){
+    const result = await fetch("http://localhost:3000/api/products/" + element._id);
+    let item =  await result.json();
+    if (item._id == element._id ){
+      totalPrice += item.price * element.quantity;
+      totalQuantity += parseInt(element.quantity);
     }
   }
-}
-*/
+  
+  document.getElementById("totalPrice").textContent = totalPrice;
+  document.getElementById("totalQuantity").textContent = totalQuantity;
+}// ________________________________________________________________________
