@@ -65,27 +65,50 @@ const postForm = () => {
       //contact[element.name] = element.value;  //do not remove
     }
   }
+  //let products = getAllId();  //recupere les id des products //do not remove
+
+
+
   let contact = {
     firstName: "Jules",
     lastName: "Deschamps",
     address: "178address",
     city: "Nimes",
     email: "bbbbbb@aaaaa.com",
-   
   }
+  let products = ["dezfzesdf1"];
 
   console.log(typeof contact.firstName, typeof contact.lastName, typeof contact.email, typeof contact.address, typeof contact.city);
-  //let products = getAllId();  //recupere les id des products //do not remove
-  
-  let products = ["dezfzesdf"]
-
+  console.log(typeof products[0])
   console.log("products", products);
   console.log("contact", contact);
 
   products = JSON.stringify(products);
   contact = JSON.stringify(contact)
 
-  /*
+ 
+
+
+  fetch(
+    "http://localhost:3000/api/products/order", {
+    'method': "POST",
+    'body' : {
+      "contact" : contact,
+      "products" : products
+    },
+    'Headers' : {
+      'Content-Type': "text/plain;charset=UTF-8",
+      'Host': "localhost:3000"
+    }
+  });
+
+
+
+
+
+
+
+   /*
   let data = {
     "contact" : contact,
     "products" : products,
@@ -107,20 +130,6 @@ const postForm = () => {
   //console.log(products)
   //console.log(data);
   //option = JSON.stringify(option);
-
-
-  fetch(
-    "http://localhost:3000/api/products/order", {
-    'method': "POST",
-    'body' : {
-      "contact" : contact,
-      "products" : products
-    },
-    'Headers' : {
-      'Content-Type': "text/plain;charset=UTF-8",
-      'Host': "localhost:3000"
-    }
-  });
 }
 
 
