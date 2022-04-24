@@ -97,7 +97,7 @@ const postForm = () => {
       "products" : products
     },
     'Headers' : {
-      'Content-Type': "text/plain;charset=UTF-8",
+      'Content-Type': "application/json",
       'Host': "localhost:3000"
     }
   });
