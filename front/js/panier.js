@@ -27,7 +27,7 @@ function newElement(tagname, attributs, inner, parentNode) {
 
 //  AFFICHE LES PRODUITS DANS LE PANIER
 const cartSynthesis = async () => {
-  document.getElementById("order").setAttribute("onmouseover", "postForm()")
+  document.getElementById("order").setAttribute("onclick", "postForm()")
   let parent = document.getElementById("cart__items");
   let panierLocal = JSON.parse(localStorage.getItem("panier"));
 
@@ -58,78 +58,57 @@ const cartSynthesis = async () => {
 
 //  FORMULAIRE //
 const postForm = () => {
-  //let contact = new Object;
+  let controlForm = 0;
+  let controlCart = document.getElementById("totalQuantity").textContent;
+  event.preventDefault();
+  let contact = new Object;
   for (element of document.getElementsByTagName("input")){
     if (element.type != "submit" && element.type != "number"){
-      //manageForm(element);    //controle le format des donnees du formulaire  //do not remove
-      //contact[element.name] = element.value;  //do not remove
+      controlForm += manageForm(element);    //controle le format des donnees du formulaire  //do not remove
+      contact[element.name] = element.value;  //do not remove
     }
   }
-  //let products = getAllId();  //recupere les id des products //do not remove
+  let products = getAllId();  //recupere les id des products //do not remove
 
 
-
-  let contact = {
-    firstName: "Jules",
-    lastName: "Deschamps",
-    address: "178address",
-    city: "Nimes",
-    email: "bbbbbb@aaaaa.com",
-  }
-  let products = ["dezfzesdf1"];
 
   console.log(typeof contact.firstName, typeof contact.lastName, typeof contact.email, typeof contact.address, typeof contact.city);
   console.log(typeof products[0])
   console.log("products", products);
   console.log("contact", contact);
 
-  products = JSON.stringify(products);
-  contact = JSON.stringify(contact)
 
- 
-
-
-  fetch(
-    "http://localhost:3000/api/products/order", {
-    'method': "POST",
-    'body' : {
-      "contact" : contact,
-      "products" : products
-    },
-    'Headers' : {
-      'Content-Type': "application/json",
-      'Host': "localhost:3000"
-    }
-  });
-
-
-
-
-
-
-
-   /*
   let data = {
-    "contact" : contact,
-    "products" : products,
+    contact : contact,
+    products : products
   }
-  console.log(typeof data);
-  */
-  /*
-  let option = {
-    'method': "POST",
-    'body' : {
-      "contact" : contact,
-      "products" : products,
-    },
-    'Headers' : {"Content-Type" : "application/json"}
-  }s
-  */
-  //
-  
-  //console.log(products)
-  //console.log(data);
-  //option = JSON.stringify(option);
+
+  console.log(controlForm)
+  if (controlForm == 0 && controlCart > 0){
+    fetch(
+      "http://localhost:3000/api/products/order", {
+      method: "POST",
+      body : JSON.stringify(
+        data
+      ),
+      headers : {
+        'Content-Type': "application/json",
+        'Accept' : 'application/json'
+      }
+    })
+    .then( (res) => {
+      console.log(res);
+      return res.json();
+    })
+    .then( (data) => {
+      console.log(data);
+      document.location.href="confirmation.html?order=" + data.orderId; 
+    });
+  } else if (controlForm > 0 && controlCart > 0){
+      alert("Le formulaire contient des erreurs");
+  } else if (controlCart == 0 && controlCart < 1){
+      alert("Votre panier est vide");
+  }
 }
 
 
@@ -144,25 +123,47 @@ const getAllId = () => {
 
 
 const manageForm = (element) => {
+  let control = 0;
   if (element.name == 'firstName' || element.name == "lastName"){
     if (! element.value.match(/^([a-zA-Z ]+)$/)){
       document.getElementById(String(element.name + "ErrorMsg")).textContent = "Veillez saisir une donnée valide";
-      validateData = false;
+      control++;
     } else{
       document.getElementById(String(element.name + "ErrorMsg")).textContent = null;
-      validateData = true;
     }
   }
+  else if (element.name == 'email'){
+    if (! element.value.match(/^\S+@\S+\.\S+$/)){
+      document.getElementById(String(element.name + "ErrorMsg")).textContent = "Veillez saisir une donnée valide";
+      control++;
+    } else{
+      document.getElementById(String(element.name + "ErrorMsg")).textContent = null;
+    }
+  }
+  else if (element.name == 'address'){
+    if (! element.value.match(/^[a-zA-Z0-9]{3,80}$/)){
+    document.getElementById(String(element.name + "ErrorMsg")).textContent = "Veillez saisir une donnée valide";
+    control++;
+  } else{
+    document.getElementById(String(element.name + "ErrorMsg")).textContent = null;
+  }
+    
+  }
+  else if (element.name == 'city'){
+    if (! element.value.match(/^([a-zA-Z ]+)$/)){
+      document.getElementById(String(element.name + "ErrorMsg")).textContent = "Veillez saisir une donnée valide";
+      control++;
+    } else{
+      document.getElementById(String(element.name + "ErrorMsg")).textContent = null;
+    }
+  }
+  console.log(control);
+  return control;
 }
 // ________________________________________________________________________
 
 
-
-
-
-
-
-
+// GESTION DES ITEMS
 const selectItem = () => {
   let target = event.target.closest("article");
   let id = target.dataset.id;
@@ -202,6 +203,8 @@ const saveCart = (cart) => {
   localStorage.setItem("panier", JSON.stringify(cart));
   total();
 }
+// ________________________________________________________________________
+
 
 //  CALCUL DU TOTAL
 const total = async () => {
@@ -219,4 +222,5 @@ const total = async () => {
   
   document.getElementById("totalPrice").textContent = totalPrice;
   document.getElementById("totalQuantity").textContent = totalQuantity;
-}// ________________________________________________________________________
+}
+// ________________________________________________________________________

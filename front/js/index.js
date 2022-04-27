@@ -1,5 +1,4 @@
 
-//import { newElement } from "global.js";
 // ______________________________GLOBAL_______________________________
 function newElement(tagname, attributs, inner, parentNode) {
   //tagname

@@ -1,3 +1,4 @@
+
 // ______________________________GLOBAL_______________________________
 function newElement(tagname, attributs, inner, parentNode) {
   //tagname
@@ -46,7 +47,7 @@ const itemGenesis = async () => {
   for (color in item.colors){
     newElement('option', {"value" : item.colors[color]}, item.colors[color], document.getElementById("colors"));
   }
-  document.getElementById("addToCart").setAttribute("onmouseover", "addToCart()");
+  document.getElementById("addToCart").setAttribute("onclick", "addToCart()");
 }// ________________________________________________________________________
 
 
