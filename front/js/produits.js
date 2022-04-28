@@ -56,7 +56,7 @@ const itemGenesis = async () => {
 
 //  AJOUTE UN ITEM AU PANIER
 const addToCart = () => {
-  let panierLocal = JSON.parse(localStorage.getItem('panier'));
+  let panierLocal = JSON.parse(window.localStorage.getItem('panier'));
   let panier = [];
   let item = {
     "_id" : getId(),
@@ -67,7 +67,7 @@ const addToCart = () => {
 
   if (panierLocal === null && validAdd) {
     panier.push(item);
-    localStorage.setItem("panier", JSON.stringify(panier));
+    window.localStorage.setItem("panier", JSON.stringify(panier));
   } else if (validAdd){   
     let match = false;
     for (element of panierLocal){
@@ -77,10 +77,10 @@ const addToCart = () => {
       }
     }
     if (match){
-      localStorage.setItem("panier", JSON.stringify(panierLocal));
+      window.localStorage.setItem("panier", JSON.stringify(panierLocal));
     } else {
       panierLocal.push(item);
-      localStorage.setItem("panier", JSON.stringify(panierLocal));
+      window.localStorage.setItem("panier", JSON.stringify(panierLocal));
     }
   }
 }// ________________________________________________________________________

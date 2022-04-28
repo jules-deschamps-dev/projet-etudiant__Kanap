@@ -1,5 +1,3 @@
-//import { post } from "./routes/product";
-
 // ______________________________GLOBAL_______________________________
 function newElement(tagname, attributs, inner, parentNode) {
   //tagname
@@ -29,7 +27,7 @@ function newElement(tagname, attributs, inner, parentNode) {
 const cartSynthesis = async () => {
   document.getElementById("order").setAttribute("onclick", "postForm()")
   let parent = document.getElementById("cart__items");
-  let panierLocal = JSON.parse(localStorage.getItem("panier"));
+  let panierLocal = JSON.parse(window.localStorage.getItem("panier"));
 
   for (element of panierLocal){
     const result = await fetch("http://localhost:3000/api/products/" + element._id);
@@ -113,7 +111,7 @@ const postForm = () => {
 
 
 const getAllId = () => {
-  let panier = JSON.parse(localStorage.panier);
+  let panier = JSON.parse(window.localStorage.panier);
   let allId = new Array();
   for (element of panier){
     allId.push(element._id);
@@ -195,12 +193,12 @@ const removeItem = () =>{
 }
 
 const getCart = () => {
-  let cart = JSON.parse(localStorage.panier);
+  let cart = JSON.parse(window.localStorage.panier);
   return cart;
 }
 
 const saveCart = (cart) => {
-  localStorage.setItem("panier", JSON.stringify(cart));
+  window.localStorage.setItem("panier", JSON.stringify(cart));
   total();
 }
 // ________________________________________________________________________
@@ -210,7 +208,7 @@ const saveCart = (cart) => {
 const total = async () => {
   let totalPrice = 0;
   let totalQuantity = 0;
-  let panierLocal = JSON.parse(localStorage.getItem('panier'));
+  let panierLocal = JSON.parse(window.localStorage.getItem('panier'));
   for (element of panierLocal){
     const result = await fetch("http://localhost:3000/api/products/" + element._id);
     let item =  await result.json();
